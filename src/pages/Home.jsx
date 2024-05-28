@@ -1,28 +1,49 @@
 import React from "react";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { searchForShows } from "../api/TvMaze";
 const Home = () => {
   const [searchStr, setSearchStr] = useState("");
-
+  const [apiData, setApiData] = useState([]);
+  const [apiDataError, setApiDataError] = useState(null)
   console.log(setSearchStr);
   const onSearchInputChange = (ev) => {
     setSearchStr(ev.target.value);
   };
 
   const onSearch = async (ev) => {
-    ev.preventDefault()
-    const response = await fetch(`https://api.tvmaze.com/search/shows?q=${searchStr}`)
-    const body = await response.json()
-      console.log(body);
-
-    // https://api.tvmaze.com/search/shows?q=boys
-  }
+    ev.preventDefault();
+    try {
+      setApiDataError(null)
+      const results = await searchForShows(searchStr);
+      setApiData(results);
+      
+    } catch (error) {
+      setApiDataError(error)
+    }
+  };
+  const renderApiData = () => {
+    if(apiDataError){
+      return <div>Something Went Wrong{apiDataError.message}</div>
+    }
+    if (apiData) {
+      return apiData.map((data) => (
+        <div key={data.show.id}>{data.show.name}</div>
+      ));
+    }
+    return null;
+  };
   return (
     <div>
       <form onSubmit={onSearch}>
-        <input name='Search'type="text" value={searchStr} onChange={onSearchInputChange} />
+        <input
+          name="Search`"
+          type="text"
+          value={searchStr}
+          onChange={onSearchInputChange}
+        />
         <button type="submit">Search</button>
       </form>
+      <div>{renderApiData()}</div>
     </div>
   );
 };
