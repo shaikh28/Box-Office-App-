@@ -5,13 +5,11 @@ import Navs from "./Navs";
 
 const MainLayout = () => {
   return (
-   
-      <div>
-       <Navs/> 
-        <AppTitle/>
-        <Outlet />
-      </div>
-   
+    <div>
+      <AppTitle />
+      <Navs />
+      <Outlet />
+    </div>
   );
 };
 
