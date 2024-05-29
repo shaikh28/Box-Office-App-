@@ -12,7 +12,6 @@ const Navs = () => {
       to: "/Starred",
     },
   ];
-  console.log("Navs")
   return (
     <div>
       <ul>
