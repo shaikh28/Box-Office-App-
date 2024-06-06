@@ -1,13 +1,39 @@
 import React from "react";
 import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
+import { useState, useReducer } from "react";
 import { searchForPeoples, searchForShows } from "../api/TvMaze";
 import SearchForm from "../components/SearchForm";
 import ShowsGrid from "../components/shows/ShowsGrid";
 import ActorsGrid from "../components/actors/ActorsGrid";
+const reducerFn = (currentCounter, action) => {
+  switch (action.type) {
+    case "INCREMENT":
+      return currentCounter + 1;
+    case "DECREMENT":
+      return currentCounter - 1;
+    case "RESET":
+      return 0;
+    case "setValue":
+      return action.newCounterValue;
+  }
+  return 0;
+};
 const Home = () => {
+  const onIncrement = () => {
+    dispatch({ type: "INCREMENT" });
+  };
+  const onDecrement = () => {
+    dispatch({ type: "DECREMENT" });
+  };
+  const onReset = () => {
+    dispatch({ type: "RESET" });
+  };
+  const onsetValue = () => {
+    dispatch({ type: "setValue",newCounterValue:500 });
+  };
 
   const [filter, setFilter] = useState("");
+  const [counter, dispatch] = useReducer(reducerFn, 0);
   const { data: apiData, error: apiDataError } = useQuery({
     queryKey: ["search", filter],
     queryFn: () =>
@@ -16,7 +42,7 @@ const Home = () => {
         : searchForPeoples(filter.q),
 
     enabled: !!filter,
-    refetchOnWindowFocus:false
+    refetchOnWindowFocus: false,
   });
 
   const onSearch = async ({ q, searchOption }) => {
@@ -50,6 +76,19 @@ const Home = () => {
   return (
     <div>
       <SearchForm onSearch={onSearch} />
+      <div>Counter : {counter}</div>
+      <button type="button" onClick={onIncrement}>
+        Increment
+      </button>
+      <button type="button" onClick={onDecrement}>
+        Decrement
+      </button>
+      <button type="button" onClick={onReset}>
+        Reset
+      </button>
+      <button type="button" onClick={onsetValue}>
+        Set The Value
+      </button>
       <div>{renderApiData()}</div>
     </div>
   );
